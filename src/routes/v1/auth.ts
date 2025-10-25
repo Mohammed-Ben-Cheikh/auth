@@ -2,6 +2,7 @@ import express from "express";
 import passport from "passport";
 import "../../config/passportGoogle";
 import AuthController from "../../controllers/v1/authController";
+import { validatorHandler } from "../../middleware/validatorHamdler";
 import {
   emailValidateur,
   loginValidateur,
@@ -11,8 +12,19 @@ import {
 } from "../../validator/authValidator";
 const authRoutes = express.Router();
 
-authRoutes.post("/register", registerValidateur, AuthController.register);
-authRoutes.post("/login", loginValidateur, AuthController.login);
+authRoutes.post(
+  "/register",
+  registerValidateur,
+  validatorHandler,
+  AuthController.register
+);
+
+authRoutes.post(
+  "/login",
+  loginValidateur,
+  validatorHandler,
+  AuthController.login
+);
 
 authRoutes.get(
   "/google",
@@ -27,31 +39,46 @@ authRoutes.get("/google/callback", (req, res, next) => {
   passport.authenticate("google", { session: false }, (err, user, info) => {
     if (err) {
       console.error("Google OAuth Error:", err);
-      return res.status(500).json({
-        error: "Erreur d'authentification Google",
-        details: err.message,
+      return res.error("Erreur d'authentification Google", 401, {
         code: err.code,
+        message: err.message,
       });
     }
     if (!user) {
       console.error("Authentication failed:", info);
-      return res.status(401).json({
-        error: "Authentification échouée",
-        details: info,
-      });
+      return res.error("Authentification échouée", 401, info);
     }
     req.user = user;
     return AuthController.loginWithOAuth(req, res);
   })(req, res, next);
 });
 
-authRoutes.post("/validate", tokenValidateur, AuthController.validate);
+authRoutes.post(
+  "/validate",
+  tokenValidateur,
+  validatorHandler,
+  AuthController.validate
+);
+
 authRoutes.post(
   "/message/validate",
   emailValidateur,
+  validatorHandler,
   AuthController.validateMessage
 );
-authRoutes.post("/reset", resetValidateur, AuthController.reset);
-authRoutes.post("/message/reset", emailValidateur, AuthController.resetMessage);
+
+authRoutes.post(
+  "/reset",
+  resetValidateur,
+  validatorHandler,
+  AuthController.reset
+);
+
+authRoutes.post(
+  "/message/reset",
+  emailValidateur,
+  validatorHandler,
+  AuthController.resetMessage
+);
 
 export default authRoutes;

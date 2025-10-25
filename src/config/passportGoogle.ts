@@ -12,7 +12,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${process.env.BASE_URL}/api/auth/google/callback`,
+      callbackURL: `${process.env.BASE_URL}/api/v1/auth/google/callback`,
     },
     async (
       accessToken: string,
@@ -21,8 +21,6 @@ passport.use(
       done: Function
     ) => {
       try {
-        console.log("test");
-
         const email = profile.emails?.[0]?.value;
         if (!email) {
           return done(new Error("Email not provided by Google"));
