@@ -10,9 +10,8 @@ app.use(express.json());
 //auth v1
 app.use("/api/v1", v1);
 
-// auth vN (placeholder) - respond "Coming soon"
-app.use("/api/v:n", (req: express.Request, res: express.Response) => {
-  res.status(200).json({ message: "Coming soon" });
+app.use((req: express.Request, res: express.Response) => {
+  res.error(`Cannot ${req.method} ${req.originalUrl}`, 404, "Not Found");
 });
 
 export default app;
