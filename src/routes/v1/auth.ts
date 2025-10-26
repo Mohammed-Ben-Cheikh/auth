@@ -12,6 +12,10 @@ import {
 } from "../../validator/authValidator";
 const authRoutes = express.Router();
 
+authRoutes.get("/", (_, res: express.Response) => {
+  res.success("Le service d'authentification est en ligne.");
+});
+
 authRoutes.post(
   "/register",
   registerValidateur,

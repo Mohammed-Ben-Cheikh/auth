@@ -129,29 +129,20 @@ class AuthController {
       if (!user) {
         return res.error("Utilisateur non trouvé", 404);
       }
-
-      // Vérifier si l'utilisateur est actif
       if (!user.isActive) {
         return res.error("Compte désactivé", 403);
       }
-
-      // Mise à jour de la dernière connexion
       await User.findByIdAndUpdate(user._id, {
         last_login_at: new Date(),
-        email_verified: true, // Assurez-vous que l'email est marqué comme vérifié
+        email_verified: true,
       });
-
       const userData = {
         userId: user._id.toString(),
         email: user.email,
         role: user.role,
       };
-
       const token = generateToken(userData);
-
-      // Inclure plus d'informations utilisateur dans la réponse
       const userResponse = AuthController.sanitizeUserData(user);
-
       return res.success(
         {
           user: userResponse,
