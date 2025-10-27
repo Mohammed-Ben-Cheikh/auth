@@ -284,5 +284,28 @@ class AuthController {
       return res.error("Une erreur inattendue s'est produite", 500, error);
     }
   }
+
+  static async getUserProfil(req: Request, res: Response) {
+    try {
+      const userId =
+        (req.user as any)?.userId ??
+        ((req.user as any)?._id ? (req.user as any)._id.toString() : undefined);
+      if (!userId) {
+        return res.error("Utilisateur non authentifié", 401);
+      }
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.error("Utilisateur non trouvé", 404);
+      }
+      return res.success(
+        { user: AuthController.sanitizeUserData(user) },
+        "Profil utilisateur récupéré",
+        200
+      );
+    } catch (error) {
+      console.log(error);
+      return res.error("Une erreur inattendue s'est produite", 500, error);
+    }
+  }
 }
 export default AuthController;

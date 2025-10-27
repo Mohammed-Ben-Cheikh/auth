@@ -3,7 +3,7 @@ import User from "../models/User";
 import { extractTokenFromHeader, verifyToken } from "../utils/jwt";
 
 declare global {
-  namespace Express {
+  namespace Response {
     interface user {
       userId: string;
       email: string;
